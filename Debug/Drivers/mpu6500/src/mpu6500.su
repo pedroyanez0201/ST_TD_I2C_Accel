@@ -1,0 +1,16 @@
+../Drivers/mpu6500/src/mpu6500.c:43:6:initMPU6500	16	static
+../Drivers/mpu6500/src/mpu6500.c:48:9:twiSendByte	24	static
+../Drivers/mpu6500/src/mpu6500.c:57:9:twiSendBytes	24	static
+../Drivers/mpu6500/src/mpu6500.c:66:9:twiRecvByte	32	static
+../Drivers/mpu6500/src/mpu6500.c:77:10:twiRecvBytes	24	static
+../Drivers/mpu6500/src/mpu6500.c:89:9:twiWriteReg8	24	static
+../Drivers/mpu6500/src/mpu6500.c:97:9:twiWriteRegs8	64	dynamic
+../Drivers/mpu6500/src/mpu6500.c:111:9:twiReadReg8	24	static
+../Drivers/mpu6500/src/mpu6500.c:122:9:twiReadRegs8	24	static
+../Drivers/mpu6500/src/mpu6500.c:134:9:imuCheckPresence	16	static
+../Drivers/mpu6500/src/mpu6500.c:142:9:imuEvalSelfTest	32	static
+../Drivers/mpu6500/src/mpu6500.c:172:9:imuSelfTest	120	static
+../Drivers/mpu6500/src/mpu6500.c:301:6:imuSetOffsets	72	static
+../Drivers/mpu6500/src/mpu6500.c:361:7:imuGetTemp	16	static
+../Drivers/mpu6500/src/mpu6500.c:371:10:imuGetAccelData	80	static
+../Drivers/mpu6500/src/mpu6500.c:387:10:imuGetGyroData	80	static

@@ -1,0 +1,4 @@
+../Core/Src/funciones.c:15:7:Aceleracion_vertical	64	static
+../Core/Src/funciones.c:34:7:Calculo_theta	16	static
+../Core/Src/funciones.c:49:10:Promedio_Vel	16	static
+../Core/Src/funciones.c:63:6:Detector_caida	32	static
