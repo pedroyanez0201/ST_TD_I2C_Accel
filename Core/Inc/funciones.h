@@ -25,7 +25,7 @@
 #define T_MAX_H				5000000
 #define TRUE 				1
 #define FALSE 				0
-#define RESET  				1
+#define Reseteo 			1
 #define ON 					0
 
 enum{

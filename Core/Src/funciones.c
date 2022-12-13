@@ -115,7 +115,7 @@ void Detector_caida(float *xnn,float h_pasado, float theta_gravedad, float ian)
 			{
 				estado = velocidad;
 				stop_timer_3();
-				Ivavg = Promedio_Vel(xnn,RESET);
+				Ivavg = Promedio_Vel(xnn,Reseteo);
 			}
 			else
 			{
