@@ -25,6 +25,8 @@
 #define T_MAX_H				5000000
 #define TRUE 				1
 #define FALSE 				0
+#define RESET  				1
+#define ON 					0
 
 enum{
 	velocidad = 0,
@@ -36,7 +38,7 @@ enum{
 
 float Aceleracion_vertical(float * zn, float * ya, arm_matrix_instance_f32 * R_b_g);
 float Calculo_theta(float * zn);
-uint32_t Promedio_Vel(float *xnn);
+uint32_t Promedio_Vel(float *xnn,uint8_t flag);
 void Detector_caida(float *xnn,float h_pasado, float theta_gravedad, float ian);
 
 #endif /* INC_FUNCIONES_H_ */

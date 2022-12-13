@@ -23,7 +23,7 @@ float Aceleracion_vertical(float * zn, float * ya, arm_matrix_instance_f32 * R_b
 
 	ian_aux[0] = ya[0] - G * zn[0];
 	ian_aux[1] = ya[1] - G * zn[1];
-	ian_aux[2] = ya[2] - G * zn[1];
+	ian_aux[2] = ya[2] - G * zn[2];
 
 	//arm_mat_mult_f32(&Ian, R_b_g, &Ian_aux);//obtengo la aceleracion vertical
 	arm_mat_mult_f32(R_b_g, &Ian_aux, &Ian);
@@ -33,20 +33,21 @@ float Aceleracion_vertical(float * zn, float * ya, arm_matrix_instance_f32 * R_b
 
 float Calculo_theta(float * zn) //ecuacion 44
 {
-	if (zn[2]>1.0 && zn[2]-1.0<0.09)
+	float aux_zn =zn[2];
+	if (aux_zn>1.0 && aux_zn-1.0<0.09)
 	{
-		zn[2]=1.0;
+		aux_zn=1.0;
 	}
 
-	if (zn[2]<-1.0 && zn[2]+1.0>-0.09)
+	if (aux_zn<-1.0 && aux_zn+1.0>-0.09)
 	{
-		zn[2]=-1.0;
+		aux_zn=-1.0;
 	}
 
-	return (float)acosf(zn[2]);
+	return (float)acosf(aux_zn);
 }
 
-uint32_t Promedio_Vel(float *xnn)
+uint32_t Promedio_Vel(float *xnn,uint8_t flag)
 {
 	//calculo promedio de velocidad
 	static uint32_t contador = 1;
@@ -56,6 +57,11 @@ uint32_t Promedio_Vel(float *xnn)
 	Ivavg = Ivavg + (xnn[1]-Ivavg)/ contador; //calculo el promedio
 
 	contador++;
+	if(flag == 1)
+	{
+		Ivavg = 0;
+		contador = 1;
+	}
 	//fin del calculo
 	return Ivavg;
 }
@@ -66,9 +72,9 @@ void Detector_caida(float *xnn,float h_pasado, float theta_gravedad, float ian)
 
 	//maquina de estados
 	static uint8_t estado = 0;
-	float Ivavg;
+	static float Ivavg=0;
 
-	Ivavg = Promedio_Vel(xnn);
+
 
 	switch (estado) {
 		case velocidad:
@@ -109,6 +115,11 @@ void Detector_caida(float *xnn,float h_pasado, float theta_gravedad, float ian)
 			{
 				estado = velocidad;
 				stop_timer_3();
+				Ivavg = Promedio_Vel(xnn,RESET);
+			}
+			else
+			{
+				Ivavg = Promedio_Vel(xnn,ON);
 			}
 			if( Ivavg < Ivavg_th)
 			{

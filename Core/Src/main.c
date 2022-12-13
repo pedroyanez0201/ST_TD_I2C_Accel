@@ -253,11 +253,11 @@ void Calculo_Rn(arm_matrix_instance_f32* Ea, arm_matrix_instance_f32* Rn, float 
 }
 
 //chequear pasajes de argumentos
-void Calculo_matriz_Rb(arm_matrix_instance_f32* R_b_g, float *zn)
+uint8_t Calculo_matriz_Rb(arm_matrix_instance_f32* R_b_g, float *zn)
 {
 	//inicio ecuacion 37
 	arm_matrix_instance_f32 R_aux1,R_aux2; //R que depende de beta y gamma
-	float r_aux1[9]={0,0,0,0,1,0,0,0,0},r_aux2[9]={1,0,0,0,0,0,0,0,0},cos_b=0,sen_b=0,cos_g=0,sen_g=0;
+	float r_aux1[9]={0,0,0,0,1,0,0,0,0},r_aux2[9]={1,0,0,0,0,0,0,0,0},cos_b=0,sen_b=0,cos_g=0,sen_g=0,aux_zn[]={zn[0],zn[1],zn[2]};
 	double gamma=0,beta = 0;
 
 	arm_mat_init_f32(&R_aux1, 3, 3, r_aux1);
@@ -265,34 +265,54 @@ void Calculo_matriz_Rb(arm_matrix_instance_f32* R_b_g, float *zn)
 
 	//chequear que no se pasen los valores mucho de uno
 
-	if (zn[0]>1.0 && zn[0]-1.0<0.09)
+	if (aux_zn[0]>1.0 && aux_zn[0]-1.0<0.2)
 	{
-		zn[0]=1.0;
+		aux_zn[0]=1.0;
+	}else if (aux_zn[0]>1.0 && aux_zn[0]-1.0>0.2)
+	{
+		return 1;
 	}
 
-	if (zn[0]<-1.0 && zn[0]+1.0>-0.09)
+	if (aux_zn[0]<-1.0 && aux_zn[0]+1.0>-0.2)
 	{
-		zn[0]=-1.0;
+		aux_zn[0]=-1.0;
+	}else if (aux_zn[0]<-1.0 && aux_zn[0]+1.0<-0.2)
+	{
+		return 1;
 	}
 
-	if (zn[1]>1.0 && zn[1]-1.0<0.09)
+
+	if (aux_zn[1]>1.0 && aux_zn[1]-1.0<0.2)
 	{
-		zn[1]=1.0;
+		aux_zn[1]=1.0;
+	}else if (aux_zn[1]>1.0 && aux_zn[1]-1.0>0.2)
+	{
+		return 1;
 	}
 
-	if (zn[1]<-1.0 && zn[1]+1.0>-0.09)
+	if (aux_zn[1]<-1.0 && aux_zn[1]+1.0>-0.2)
 	{
-		zn[1]=-1.0;
+		aux_zn[1]=-1.0;
+	}else if (aux_zn[1]<-1.0 && aux_zn[1]+1.0<-0.2)
+	{
+		return 1;
 	}
 
-	if (zn[2]>1.0 && zn[2]-1.0<0.09)
+
+	if (aux_zn[2]>1.0 && aux_zn[2]-1.0<0.2)
 	{
-		zn[2]=1.0;
+		aux_zn[2]=1.0;
+	}else if (aux_zn[2]>1.0 && aux_zn[2]-1.0>0.2)
+	{
+		return 1;
 	}
 
-	if (zn[2]<-1.0 && zn[2]+1.0>-0.09)
+	if (aux_zn[2]<-1.0 && aux_zn[2]+1.0>-0.2)
 	{
-		zn[2]=-1.0;
+		aux_zn[2]=-1.0;
+	}else if (aux_zn[2]<-1.0 && aux_zn[2]+1.0<-0.2)
+	{
+		return 1;
 	}
 
 
@@ -326,6 +346,7 @@ void Calculo_matriz_Rb(arm_matrix_instance_f32* R_b_g, float *zn)
 	//arm_mat_mult_f32(R_b_g, &R_aux1, &R_aux2);//calculo la matriz de rotacion
 	arm_mat_mult_f32(&R_aux1, &R_aux1, R_b_g);
 	//fin ecuacion 37
+	return 0;//salio bien
 }
 
 void Calculo_Xnn(arm_matrix_instance_f32 * Xnn, float * h_pasado, float iaz)//xnn tiene 2 posiciones, iaz es el valor devuelto por aceleracion vertical
@@ -497,12 +518,23 @@ void fil_kal(float* yg, float* ya, arm_matrix_instance_f32* Ap, arm_matrix_insta
 	arm_mat_add_f32(&a, &Q, Pap);//chequear ordenes de matrices me parece que p tendria que ser 3x3
 	//ojo que estos valores deben seguir por fuera de la funcion
 
-
+#define LD2_Pin GPIO_PIN_5
+#define LD2_GPIO_Port GPIOA
 	//acoplado
-	Calculo_matriz_Rb(&R_b_g, Xaa->pData);
-	iaz = Aceleracion_vertical(Xaa->pData,ya,&R_b_g);
-	Calculo_Xnn(&Xnn, &h_pasado, iaz);
-	Detector_caida(xnn,h_pasado,Calculo_theta(Xaa->pData),iaz);//maquina de estados
+	uint8_t retorno;
+	//acoplado
+	retorno = Calculo_matriz_Rb(&R_b_g, Xaa->pData);
+	if(retorno)
+	{
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, SET);
+
+	}else {
+		HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, RESET);
+
+		iaz = Aceleracion_vertical(Xaa->pData,ya,&R_b_g);
+		Calculo_Xnn(&Xnn, &h_pasado, iaz);
+		Detector_caida(xnn,h_pasado,Calculo_theta(Xaa->pData),iaz);//maquina de estados
+	}
 
 
 //primera pasada no pasan por aca ni las de arriba
