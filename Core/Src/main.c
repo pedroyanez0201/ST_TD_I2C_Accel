@@ -409,13 +409,15 @@ void fil_kal(float* yg, float* ya, arm_matrix_instance_f32* Ap, arm_matrix_insta
 	arm_matrix_instance_f32 Zn;
 	arm_matrix_instance_f32 Kn;
 	arm_matrix_instance_f32 Ya;
+	arm_matrix_instance_f32 Zpnn;
 	//arm_matrix_instance_f32 Ap;
 	//acoplado
 	arm_matrix_instance_f32 R_b_g,Xnn;
 	static float  h_pasado = 0;
 	float iaz = 0;
+	float32_t norma_1, norma_2;
 
-	float h[9], g[9], f[9], q[9], A[9], B[9], E[9], AX[9], C[3], D[3],ht[9],zn[3],kn[9];
+	float h[9], g[9], f[9], q[9], A[9], B[9], E[9], AX[9], C[3], D[3],ht[9],zn[3],kn[9], zpnn[3];
 	float xnn[2]={0,0},r_b_g[9]={0,0,0,0,0,0,0,0,0};
 
 	arm_mat_init_f32(&I, 3, 3,identidad);
@@ -437,6 +439,7 @@ void fil_kal(float* yg, float* ya, arm_matrix_instance_f32* Ap, arm_matrix_insta
 	arm_mat_init_f32(&Ht, 3, 3, ht);
 	arm_mat_init_f32(&Zn, 3, 1, zn);
 	arm_mat_init_f32(&Kn, 3, 3, kn);
+	arm_mat_init_f32(&Zpnn, 3, 3, zpnn);
 	//arm_mat_init_f32(&Ap, 3, 1, a_p);
 	//acoplado
 	arm_mat_init_f32(&Xnn, 2, 1, xnn);
@@ -471,7 +474,15 @@ void fil_kal(float* yg, float* ya, arm_matrix_instance_f32* Ap, arm_matrix_insta
 		arm_mat_scale_f32(&c, -1, &d);
 		arm_mat_add_f32(&Zn, &d, &c);
 		arm_mat_mult_f32(&Kn, &c, &d);
-		arm_mat_add_f32(Xap, &d, Xaa);
+		arm_mat_add_f32(Xap, &d, &Zpnn);
+
+		//normalizacion
+
+
+		norma_1 = zpnn[0]*zpnn[0] + zpnn[1]*zpnn[1] + zpnn[2]*zpnn[2];
+		arm_sqrt_f32(norma_1, &norma_2);
+
+		arm_mat_scale_f32(&Zpnn, 1.0/norma_2, Xaa);
 
 
 		//P_a_a = (I - Kn.H).P_a_p(I - KnH)t + Kn.Rn.Knt
@@ -518,8 +529,8 @@ void fil_kal(float* yg, float* ya, arm_matrix_instance_f32* Ap, arm_matrix_insta
 	arm_mat_add_f32(&a, &Q, Pap);//chequear ordenes de matrices me parece que p tendria que ser 3x3
 	//ojo que estos valores deben seguir por fuera de la funcion
 
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
+/*#define LD2_Pin GPIO_PIN_5
+#define LD2_GPIO_Port GPIOA*/
 	//acoplado
 	uint8_t retorno;
 	//acoplado
