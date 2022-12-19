@@ -1,8 +1,0 @@
-../Core/Src/timer.c:10:6:inic_timer_3	16	static
-../Core/Src/timer.c:26:6:start_timer_3	4	static
-../Core/Src/timer.c:32:10:valor_timer_3	16	static
-../Core/Src/timer.c:39:6:stop_timer_3	4	static
-../Core/Src/timer.c:44:6:inic_timer_4	16	static
-../Core/Src/timer.c:60:6:start_timer_4	4	static
-../Core/Src/timer.c:66:10:valor_timer_4	16	static
-../Core/Src/timer.c:73:6:stop_timer_4	4	static

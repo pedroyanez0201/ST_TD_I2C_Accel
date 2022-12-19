@@ -74,6 +74,11 @@
 #include "arm_const_structs.h"
 #include "timer.h"
 #include "funciones.h"
+
+#if  defined(mainPC_READ) || defined(mainPC_WRITE)
+#include "stdio.h"
+extern void initialise_monitor_handles(void);
+#endif
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -624,6 +629,9 @@ void buttonLoop() {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  #if  defined(mainPC_READ) || defined(mainPC_WRITE)
+  initialise_monitor_handles();
+  #endif
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -812,7 +820,12 @@ for (i=0;i<10;i++)
 	{
 		//recibo datos de una cola
 
+		#ifndef mainPC_READ
 		getData();
+		#else
+		printf("Ready to receive data\n");
+		vPcRead(&dt, &gir_x, &gir_y, &gir_z, &acc_x, &acc_y, &acc_z);
+		#endif
 
 		yg[0] = gir_x;
 		yg[1] = gir_y;
@@ -823,8 +836,11 @@ for (i=0;i<10;i++)
 		ya[2] = acc_z;
 
 
-
 		fil_kal(yg, ya, &Ap, &Xaa, &Xap, &Paa, &Pap, primero, cov_a, cov_g);
+
+		#ifdef mainPC_WRITE
+		vPcWrite((float) 5.1);
+		#endif
 
 		primero = 0;
 
