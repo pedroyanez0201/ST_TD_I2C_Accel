@@ -75,8 +75,8 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
-#define mainPC_READ
-#define mainPC_WRITE
+//#define mainPC_READ
+//#define mainPC_WRITE
 
 /* USER CODE END Private defines */
 
